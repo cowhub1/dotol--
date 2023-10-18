@@ -1,0 +1,48 @@
+<style>
+  .nav-color {
+    background-color: #c67d24;
+  }
+
+  .link-dark {
+    text-decoration: none;
+  }
+</style>
+
+<nav class="navbar navbar-expand-sm nav-color navbar-dark">
+  <div class="container-fluid">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link active" href="/board/list">게시글</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/map">지도</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/weather">날씨</a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav">
+      <li th:if="${session.user_info == null}" style='font-size: 20px;'>
+        <a th:href="@{/signin}" class="link-dark">
+          로그인🌰
+        </a>
+        <a th:href="@{/signup}" class="link-dark">
+          회원가입🐿️
+        </a>
+      </li>
+      <h1 th:unless="${session.user_info == null}" style='font-size: 20px;'>
+        <a class="link-dark">
+          [[ ${session.user_info.name} + '님 반갑습니다.😎' ]]
+        </a>
+        <a th:href="@{/signout}" class="link-dark">
+          로그아웃👋
+        </a>
+        <a th:href="@{/mypage(email=${session.user_info.email})}" class="link-dark">
+          Mypage🐿️
+        </a>
+      </h1>
+      </li>
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="common/head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+     #weather-container {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .city-container {
+        text-align: center;
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px;
+        display: inline-block;
+    }
+
+    /* 검색 창과 버튼을 가로로 나란히 정렬 */
+    #searchForm {
+        text-align: center;
+    }
+
+    /* 검색 창 스타일 */
+    #cityInput {
+        width: 30%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+    }
+
+    /* 검색 버튼 스타일 */
+    #searchButton {
+        background-color: #efc19d;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    .city-container {
+        text-align: center;
+        margin-top: 20px;
+        width: 200px;
+        border: 2px solid #efc19d;
+        /* 테두리 스타일과 색상을 원하는 대로 수정 */
+        padding: 10px;
+        margin: 10px;
+        display: inline-block;
+        border-radius: 10px;
+        /* 테두리의 굴곡을 둥글게 만듭니다 */
+    }
+
+    .cityname {
+        color: #9c531c;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+    }
+
+    .icon {
+        width: 80px;
+        height: 80px;
+    }
+</style>
+
+<body>
+    <div th:replace="common/header"></div>
+    <nav th:replace="common/nav"></nav>
+    <br>
+    <div id="searchForm">
+        <input type="text" id="cityInput" placeholder="도시명 입력" onkeydown="handleSearch(event)">
+        <button id="searchButton" onclick="searchWeather()">검색</button>
+    </div>
+    <div id="weather-container"></div>
+
+    <script>
+        const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY';
+        const cities = ['Gwangju'];
+        const weatherContainer = document.getElementById('weather-container');
+
+        cities.forEach(city => {
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=691b9681b64032def97f5cc8af02abb6&units=metric`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const iconUrl = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+                    const description = data.weather[0].description;
+                    const temperature = data.main.temp;
+                    const humidity = data.main.humidity;
+                    const windSpeed = data.wind.speed;
+
+                    const cityContainer = document.createElement('div');
+                    cityContainer.classList.add('city-container');
+                    cityContainer.innerHTML = `
+                        <h2 class="cityname">${city}</h2>
+                        <div class="weather-icon">
+                            <img src="${iconUrl}" class="icon" alt="날씨 아이콘">
+                        </div>
+                        <p class="weather-description">날씨: ${description}</p>
+                        <p class="temperature">기온: ${temperature}°C</p>
+                        <p class="humidity">습도: ${humidity}%</p>
+                        <p class="wind-speed">풍속: ${windSpeed} m/s</p>
+                    `;
+
+                    weatherContainer.appendChild(cityContainer);
+                })
+                .catch(error => {
+                    console.error(`${city}의 날씨 정보를 가져오는 중 오류가 발생했습니다:`, error);
+                });
+        });
+
+        function searchWeather() {
+            const apiKey = 'YOUR_OPENWEATHERMAP_API_KEY';
+            const cityInput = document.getElementById('cityInput');
+            const cityInputValue = cityInput.value; // 입력된 도시명 저장
+
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityInputValue}&appid=691b9681b64032def97f5cc8af02abb6&units=metric`;
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const iconUrl = `http://openweathermap.org/img/wn/${data.weather[0].icon}.png`;
+                    const description = data.weather[0].description;
+                    const temperature = data.main.temp;
+                    const humidity = data.main.humidity;
+                    const windSpeed = data.wind.speed;
+
+                    const cityContainer = document.createElement('div');
+                    cityContainer.classList.add('city-container');
+                    cityContainer.innerHTML = `
+                <h2 class="cityname">${cityInputValue}</h2>
+                <div class="weather-icon">
+                    <img src="${iconUrl}" class="icon" alt="날씨 아이콘">
+                </div>
+                <p class="weather-description">날씨: ${description}</p>
+                <p class="temperature">기온: ${temperature}°C</p>
+                <p class="humidity">습도: ${humidity}%</p>
+                <p class="wind-speed">풍속: ${windSpeed} m/s</p>
+            `;
+
+                    weatherContainer.appendChild(cityContainer);
+
+                    // 검색창 비우기
+                    cityInput.value = '';
+                })
+                .catch(error => {
+                    console.error(`${cityInputValue}의 날씨 정보를 가져오는 중 오류가 발생했습니다:`, error);
+                });
+        }
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                searchWeather(); // Enter 키를 누르면 검색 함수 호출
+            }
+        }
+    </script>
+    <div th:replace="common/footer">
+    </div>
+</body>
+
+</html>

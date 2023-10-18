@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="common/head">
+
+</head>
+
+<style>
+  .icon {
+    width: 80px;
+    height: 80px;
+  }
+
+  .weatherbox {
+    background-color: #efc19d;
+    border: 2px solid #efc19d;
+    border-radius: 10px;
+  }
+
+  .about-us-color {
+    background-color: #f0e3d9;
+    font-size: 35px;
+    text-decoration: none;
+  }
+
+  .new-content-color {
+    background-color: #f0e3d9;
+  }
+
+  h2 a {
+    color: black;
+    text-decoration: none;
+    font-size: 35px;
+  }
+
+  h2 a:hover {
+    color: #c67d24;
+    text-decoration: underline;
+  }
+
+  .post-title {
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .post-title:hover {
+    color: #c67d24;
+  }
+
+  .post-content {
+    color: black;
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 18px;
+  }
+
+  .post-content:hover {
+    color: #c67d24;
+  }
+
+  .post-list-start {
+    margin-top: 30px;
+  }
+
+  .bold-number {
+    font-weight: bold;
+    font-size: 20px;
+  }
+</style>
+
+<body>
+
+  <div th:replace="common/header">
+
+  </div>
+
+  <nav th:replace="common/nav">
+
+  </nav>
+
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-sm-4">
+        <h2 class="about-us-color"><a href="/map">🌏MAP</a></h2>
+        <a href="/map">
+          <img src="map.png" alt="Image Description" height="200px">
+        </a>
+        <p>🚩장소를 저장해요</p>
+        <p>🌮광주 맛집도 알아봅시다</p>
+
+        <h2 class="mt-5 new-content-color"><a href="/weather">🌞오늘의 날씨</a></h2>
+        <div class="text-center border p-3 weatherbox">
+          <span class="nowtime"></span>
+          <p class="point">나의 위치: </p>
+          <h3 class="Icon"></h3>
+          <p class="Nowweather">현재날씨: </p>
+          <span class="Nowtemp">기온: </span>°C
+          <br>
+          <span class="Humidity">습도: </span>%
+          <br>
+          <span class="WindSpeed">풍속: </span>m/s
+        </div>
+        </ul>
+        <hr class="d-sm-none">
+      </div>
+      <div class="col-sm-8 ">
+
+        <h2 class="about-us-color"><a href="/board/image">🌰Dotorigram</a></h2>
+        <a href="/board/image">
+          <img src="dotol.png" alt="Image Description" height="200px"></a>
+
+        <p>Forever Young, Oct 11, 2023</p>
+        <p>(왼쪽부터) 이채은 조수현 이혜빈 박서희.</p>
+
+        <h2 class="mt-5 new-content-color"><a href="/board/list">❤️‍🔥최신 게시글 목록</a></h2>
+        <div th:each="post, stat : ${latestPosts}" class="post-list-start">
+          <p><span class="bold-number" th:text="${stat.index + 1} + '. '"></span><a class="post-title"
+              th:href="@{/board/{id}(id=${post.id})}" th:text="'제목: ' + ${post.title}"></a></p>
+          <p>&emsp;<a class="post-content" th:href="@{/board/{id}(id=${post.id})}"
+              th:text="'🌰 ' + ${post.content}"></a></p>
+        </div>
+
+      </div>
+    </div>
+
+    <div th:replace="common/footer">
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/path/to/your/script.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+
+        function convertTime() {
+          var now = new Date();
+          var month = now.getMonth() + 1;
+          var date = now.getDate();
+          return month + '월' + date + '일';
+        }
+
+        var currentTime = convertTime();
+        $('.nowtime').append(currentTime);
+      });
+
+      $.getJSON('https://api.openweathermap.org/data/2.5/weather?lat=35.158109&lon=126.795508&appid=691b9681b64032def97f5cc8af02abb6&units=metric',
+        function (WeatherResult) {
+
+          $('.Nowweather').append(WeatherResult.weather[0].main);
+          $('.Nowtemp').append(WeatherResult.main.temp);
+          $('.Humidity').append(WeatherResult.main.humidity);
+          $('.WindSpeed').append(WeatherResult.wind.speed);
+          $('.point').append(WeatherResult.name);
+          var weathericonUrl =
+            '<img class="icon" src="http://openweathermap.org/img/wn/'
+            + WeatherResult.weather[0].icon +
+            '.png" alt="' + WeatherResult.weather[0].description + '" />'
+
+          $('.Icon').html(weathericonUrl);
+        });
+    </script>
+
+
+</body>
+
+</html>

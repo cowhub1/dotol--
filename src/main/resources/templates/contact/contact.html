@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="common/head">
+
+</head>
+<body>
+
+<div th:replace="common/header">
+   
+</div>
+
+<nav th:replace="common/nav">
+
+</nav>
+
+<div class="container mt-5">
+  <div class="row">
+    <form method="post" action="/contact">
+      <div class="mb-3">
+        <label for="email">작성자 이메일 주소:</label>
+        <input type="text" class="form-control" id="email" name="email">
+      </div>
+      <div class="mb-3">
+        <label for="subject">제목:</label>
+        <input type="text" class="form-control" id="subject" name="subject">
+      </div>
+      <div class="mb-3">
+        <label for="content">내용:</label>
+        <textarea class="form-control" rows="5" name="content" id="content"></textarea>
+      </div>
+      <div class="d-grid gap-2">
+        <button class="btn btn-primary" id="complete">작성완료</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div th:replace="common/footer">
+</div>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="common/head">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<style>
+  #write-btn {
+    background-color: #f0e3d9;
+    width: 150px;
+    height: 40px;
+    position: fixed;
+    float: right;
+    right: 120px;
+    bottom: 20px;
+  }
+
+  #write-btn:hover {
+    background-color: #ad5919;
+    border-color: #ad5919;
+  }
+
+  #search-btn {
+    background-color: #f0e3d9;
+    border-color: #f0e3d9;
+  }
+
+  .pagination-form {
+    margin-top: 20px;
+  }
+
+  .search-form {
+    margin-top: 20px;
+    margin-bottom: 40px;
+  }
+
+  .pagination .page-link {
+    color: #9c6262;
+  }
+
+  .pagination .page-link:hover {
+    color: #FFFFFF;
+    background-color: #cb6f45;
+  }
+</style>
+</style>
+
+<body>
+
+  <div th:replace="common/header">
+
+  </div>
+
+  <nav th:replace="common/nav">
+
+  </nav>
+
+  <div class="container mt-5">
+    <div class="row">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="board : ${list}" th:onclick="'window.location = \'/board/view?id=' + ${board.id} + '\''">
+            <td th:text="${board.id}"></td>
+            <td th:text="${board.title}"></td>
+            <td th:text="${board.userId}"></td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="button" class="btn btn-block" id="write-btn">글쓰기</button>
+
+      <div class="d-flex justify-content-center pagination-form">
+        <ul class="pagination">
+          <li class="page-item">
+            <a class="page-link" th:href="@{/board/list(P=1)}">《</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" th:href="@{/board/list(P=${prevGroupStart})}">〈</a>
+          </li>
+
+          <th:block th:each="pageNumber : ${#numbers.sequence(startPage, endPage)}">
+            <li class="page-item">
+              <a class="page-link" th:href="@{/board/list(P=${pageNumber})}">[[ ${pageNumber} ]]</a>
+            </li>
+          </th:block>
+          
+          <li class="page-item">
+            <a class="page-link" th:href="@{/board/list(P=${nextGroupStart})}">〉</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" th:href="@{/board/list(P=${totalPages})}">》</a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="d-flex justify-content-center search-form">
+        <form th:action="@{/board/list}" method="get">
+          <input type="text" name="keyword" placeholder="검색어 입력">
+          <button type="button" id="search-btn">검색</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.querySelector('#write-btn').addEventListener('click', () => {
+      location = '/board/write';
+    });
+  </script>
+
+  <!-- <div th:replace="common/footer">
+  </div> -->
+
+</body>
+
+</html>

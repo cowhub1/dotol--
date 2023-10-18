@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+</html>
+<html lang="en">
+
+<head th:replace="common/head">
+</head>
+<style>
+    .btn {
+        background-color: rgb(228, 179, 93);
+        border-color: rgb(228, 179, 93);
+    }
+
+    .btn:hover {
+        background-color: rgb(228, 179, 93);
+        border-color: rgb(228, 179, 93);
+    }
+</style>
+
+<body>
+
+    <div th:replace="common/header">
+
+    </div>
+
+    <nav th:replace="common/nav">
+
+    </nav>
+
+    <div class="container mt-5">
+        <form th:action="@{/map/where}" method="get" onsubmit="searchAddress(); return false;">
+            <input type="text" id="search" placeholder="검색어 입력">
+            <button type="submit" class="btn btn-primary btn-block">검색</button>
+            <button onclick="move()" class="btn btn-primary btn-block" id="write-btn">장소 등록창으로 이동</button>
+        </form>
+        <p class=search id="storeName">장소명:</p>
+        <p class=latitude id="latitude">위도:</p>
+        <p class=longitude id="longitude">경도:</p>
+        <div id="map" style="width:500px; height:400px; margin:0 0;"></div>
+    </div>
+
+    <script type="text/javascript"
+        src="//dapi.kakao.com/v2/maps/sdk.js?appkey=da146a2a6ff6a54903c1d2a7caecd1c7&libraries=services"></script>
+
+    <script>
+        let map;
+        let storeNameElement;
+        let latitudeElement;
+        let longitudeElement;
+        // 검색어를 이용하여 지도에 마커를 표시하는 함수
+        function searchAddress() {
+            const search = document.getElementById('search').value; // 검색어 입력란에서 검색어 가져오기
+            const container = document.getElementById('map');
+            let storeNameElement = document.getElementById('storeName');
+            let latitudeElement = document.getElementById('latitude');
+            let longitudeElement = document.getElementById('longitude');
+            const options = {
+                level: 9
+            };
+
+            // 카카오 맵 로드 후 지도 생성
+            kakao.maps.load(function () {
+                const geocoder = new kakao.maps.services.Geocoder();
+                geocoder.addressSearch(search, function (result, status) {
+                    if (status === kakao.maps.services.Status.OK) {
+                        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        const marker = new kakao.maps.Marker({
+                            map: map,
+                            position: coords
+                        });
+                        const storeName = search;
+                        storeNameElement.textContent = '장소명: ' + storeName;
+                        document.getElementById('latitude').textContent = '위도: ' + result[0].y;
+                        document.getElementById('longitude').textContent = '경도: ' + result[0].x;
+                        const infowindow = new kakao.maps.InfoWindow({
+                            content: `<div style="width:150px;text-align:center;padding:6px 0;">"${storeName}"</div>`
+                        });
+                        infowindow.open(map, marker);
+                        map.setCenter(coords);
+                    }
+                });
+
+            });
+
+
+        }
+
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            createMap(lat, lng);
+        });
+
+        function createMap(lat, lng) {
+            const container = document.getElementById('map');
+            const options = {
+                center: new kakao.maps.LatLng(lat, lng),
+                level: 9
+            }
+            map = new kakao.maps.Map(container, options);
+        }
+
+
+    </script>
+    <script>
+        function move() {
+            location = '/map';
+        }
+    </script>
+    <div th:replace="common/footer">
+    </div>
+
+</body>
+
+</html>

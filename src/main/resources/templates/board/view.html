@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="common/head"></head>
+
+<body>
+
+  <div th:replace="common/header"></div>
+  <nav th:replace="common/nav"></nav>
+
+  <div class="container mt-5">
+    <div class="card">
+      <div class="card-body">
+        <span class="badge bg-primary rounded-pill" th:text="${board.id} + '번'"></span>
+        <h5 class="card-title" th:text="${board.title}"></h5>
+        <h6 class="card-subtitle mb-2 text-muted" th:text="${board.userId}"></h6>
+        <p class="card-text" th:text="${board.content}"></p>
+        <form action="/board/comment" method="post">
+          <input type="text" name="content">
+          <input type="hidden" name="boardId" th:value="${board.id}">
+          <button type="submit">댓글😊달기</button>
+        </form>
+        <hr>
+        댓글✏️
+        <ul th:each="comment : ${board.comments}">
+          <li>[[ ${comment.content} ]] / [[ ${comment.writer} ]] / [[ ${comment.creDate} ]]
+            <button th:onclick="'commentRm(' + ${comment.id} +')'">댓삭🥲</button>
+          </li>
+        </ul>
+        <hr>
+        첨부된 파일📥
+        <ul th:each="fileAtch : ${board.fileAtchs}">
+          <li>
+            <a th:href="@{/download(id=${fileAtch.id})}">
+              [[${fileAtch.originalName}]]
+            </a>
+            <button th:onclick="'fileRm(' + ${fileAtch.id} +')'">파일삭제✂️</button>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+  <div class="container mt-5">
+    <ul class="nav justify-content-end">
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/board/list}" id="list">목록</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" th:href="@{'/board/update/' + ${board.id}}" id="update">수정</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" th:data-num="${board.id}" id="delete">삭제</a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- <div th:replace="common/footer">
+  </div> -->
+
+  <script>
+    var authorUserId = "[[${board.userId}]]";
+
+    document.querySelector('#update').addEventListener('click', (e) => {
+      e.preventDefault();
+      // 사용자 정보 가져오기
+      var currentUser = "[[${session.user_info != null ? session.user_info.email : ''}]]"; // null 체크 추가
+      if (currentUser !== authorUserId) {
+        alert('게시글 작성자만 수정할 수 있습니다.'); // 수정 권한이 없을 때 경고창 표시
+      } else {
+        // 수정 페이지로 이동
+        window.location.href = e.target.getAttribute("href");
+      }
+    });
+
+    document.querySelector('#delete').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (confirm('삭제하시겠습니까?')) {
+        const num = e.target.dataset.num;
+        if (num !== "null")
+          location = `/board/delete/${num}`;
+      }
+    });
+
+    function commentRm(id) {
+      const isOk = confirm('삭제하시겠습니까?');
+      if (isOk) {
+        location = `/board/comment/remove?id=${id}&boardId=[[${board.id}]]`;
+      }
+    }
+
+    function fileRm(id) {
+      const isOk = confirm('삭제하시겠습니까?');
+      if (isOk) {
+        location = `/board/fileAtch/remove?id=${id}&boardId=[[${board.id}]]`;
+      }
+    }
+  </script>
+</body>
+
+</html>

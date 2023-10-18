@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="common/head"></head>
+
+<style>
+  .btn-primary {
+    background-color: #efc19d;
+    border-color: #efc19d;
+    color: black;
+  }
+</style>
+
+<body>
+  <div th:replace="common/header"> </div>
+  <nav th:replace="common/nav"></nav>
+
+  <div class="container mt-5">
+    <div class="row">
+      <form method="post" action="/signup">
+        <div class="mb-3">
+          <label for="email">Email:</label>
+          <input type="email" class="form-control" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z]+\.[a-z]{2,}$"
+            title=" 정확한 이메일 주소를 입력해주세요" placeholder="ex.daram@dotori.com" required>
+          <button class="btn btn-primary" type="button" onclick="checkEmail()">중복확인</button>
+          <span id="duplicateResult"></span>
+        </div>
+        <div class="mb-3">
+          <label for="pwd">Password:</label>
+          <input type="password" class="form-control" id="pwd" name="pwd" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
+            title="영문대소문자/숫자로 이루어진 최소 8글자의 비밀번호를 입력하세요" placeholder="영문대소문자/숫자로 이루어진 최소 8글자의 비밀번호" required>
+        </div>
+        <div class="mb-3">
+          <label for="name">Name:</label>
+          <input type="text" class="form-control" id="name" name="name" pattern="^[가-힣]+$" title="올바른 이름을 입력하세요 ex.홍길동"
+            placeholder="이름" required>
+        </div>
+        <div class="mb-3">
+          <label for="name">Phone:</label>
+          <input type="text" class="form-control" id="phone" name="phone" pattern="[0-9]{10,11}"
+            title="10-11자리의 숫자를 '-' 없이 입력하세요" placeholder="휴대전화번호('-'기호 제외 10~11자리)" required>
+        </div>
+        <div class="d-grid gap-2">
+
+          <button class="btn btn-primary" id="signup">가입하기</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      async function checkEmail() {
+        const email = document.querySelector("[name=email]").value;
+
+        const response = await fetch(`/email-check?email=${encodeURIComponent(email)}`);
+        const result = await response.text();
+
+        // 중복 확인 결과에 따라 메시지 표시
+        const duplicateResultElement = document.getElementById("duplicateResult");
+
+        if (result == "가입불가") {
+          duplicateResultElement.textContent = "중복된 Email입니다.";
+          duplicateResultElement.style.color = "red";
+          // 다른 스타일링 등의 추가적인 처리 가능
+        } else if (result == "가입가능") {
+          duplicateResultElement.textContent = "사용 가능한 Email입니다.";
+          duplicateResultElement.style.color = "green";
+          // 다른 스타일링 등의 추가적인 처리 가능
+        }
+      }
+    </script>
+  </div>
+
+  <div th:replace="common/footer">
+  </div>
+
+</body>
+
+</html>

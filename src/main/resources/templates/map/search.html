@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"></html>
+<html lang="en">
+
+<head th:replace="common/head"></head>
+
+<style>
+    .btn {
+        background-color: rgb(228, 179, 93);
+        border-color: rgb(228, 179, 93);
+    }
+
+    .btn:hover {
+        background-color: rgb(228, 179, 93);
+        border-color: rgb(228, 179, 93);
+    }
+</style>
+
+<body>
+
+    <div th:replace="common/header"></div>
+
+    <nav th:replace="common/nav"></nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div id="map" style="width:500px; height:400px; margin:0 auto;"></div>
+        </div>
+        <br>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>상호명</th>
+                    <th>소재지</th>
+                    <th>연락처</th>
+                    <th>이동</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <br>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div>
+            <ul>
+                <li th:each="point : ${points}">
+                    <!-- Point 정보 출력 -->
+                </li>
+            </ul>
+        
+            <div class="pagination">
+                <a th:if="${startPage > 1}" th:href="@{/map/search(P=${startPage - 1})}">Previous</a>
+        
+                <th:block th:each="pageNum : ${#numbers.sequence(startPage, endPaeg)}">
+                    <a th:text="${pageNum}" th:class="${pageNum == P ? 'current' : ''}"
+                        th:href="@{/map/search(P=${pageNum})}">[[ ${pageNumber} ]]</a>
+                </th:block>
+        
+                <a th:if="${endpage < totalPages}" th:href="@{/map/search(P=${endpage + 1})}">Next</a>
+            </div>
+        </div>
+     
+    </div>
+
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=da146a2a6ff6a54903c1d2a7caecd1c7&libraries=services"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+        navigator.geolocation.getCurrentPosition(function (position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            createMap(lat, lng);
+        });
+
+        function createMap(lat, lng) {
+            const container = document.getElementById('map');
+            const options = {
+                center: new kakao.maps.LatLng(lat, lng),
+                level: 9
+            }
+            map = new kakao.maps.Map(container, options);
+            openAPI();
+        }
+
+        async function openAPI() {
+            const data = await fetch('https://api.odcloud.kr/api/3082925/v1/uddi:7c291067-a956-4811-a9ec-942b6979ff77_201709270816?page=1&perPage=100&serviceKey=MIXnOMoIsPRv2mMnIzb2DipmuKI0OQmMZZM9C3%2BmXo1hABX2vACXlodSqfqwBwH39nWq%2FYUF%2Bq3W%2FT%2BrxBUi4Q%3D%3D');
+            const res = await data.json();
+            const data_list = res.data;
+            let code = '';
+            data_list.forEach((v) => {
+                code += `<tr><td>${v['상 호']}</td><td>${v['소재지']}</td><td>${v['연락처']}</td><td><button class="btn btn-primary btn-block" onclick = "moveLatLon()">이동</button></td></tr>`
+
+                // kakao.maps.load(function(){
+
+                const geocoder = new kakao.maps.services.Geocoder();
+                const address = v.소재지;
+                geocoder.addressSearch(address, function (result, status) {
+                    if (status === kakao.maps.services.Status.OK) {
+                        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        const marker = new kakao.maps.Marker({
+                            map: map,
+                            position: coords
+                        });
+                        const infowindow = new kakao.maps.InfoWindow({
+                            content: `<div style="width:150px;text-align:center;padding:6px 0;">"${v['상 호']}"</div>`
+                        });
+                        infowindow.open(map, marker);
+                        map.setCenter(coords);
+                    }
+                });
+
+                // });
+            })
+
+            const table = document.querySelector('table tbody tr:last-child');
+            table.insertAdjacentHTML("afterend", code);
+        }
+    </script>
+
+    <script>
+        function moveLatLon(lat, lng) {
+            map.setLevel(3);
+            const moveLatlng = new kakao.maps.LatLng(35.1490440067967, 126.917628214769)
+            map.panTo(moveLatlng);
+        }
+    </script>
+
+    <div th:replace="common/footer"></div>
+
+</body>
+
+</html>
